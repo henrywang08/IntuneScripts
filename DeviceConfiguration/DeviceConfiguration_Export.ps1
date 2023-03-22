@@ -10,6 +10,10 @@ See LICENSE in the project root for license information.
 ####################################################
 
 ## 20230322 - Replace Get-AuthToken function using MSAL. The original script is using ADAL
+# Requirement: 
+#   1. Install Microsoft.Identity.Client module 
+#   2. Install Microsoft.IdentityModel.Abstractions module. This module requires Nuget is registered as PSRepository
+#           Register-PSRepository  -Name Nuget -SourceLocation "http://www.nuget.org/api/v2"
 function Get-AuthToken {
 
     <#
