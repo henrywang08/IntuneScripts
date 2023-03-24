@@ -581,8 +581,638 @@ Function Get-SettingsCatalogPolicy(){
     
     ####################################################
     
+    Function Get-EndpointSecurityTemplate(){
 
+        <#
+        .SYNOPSIS
+        This function is used to get all Endpoint Security templates using the Graph API REST interface
+        .DESCRIPTION
+        The function connects to the Graph API Interface and gets all Endpoint Security templates
+        .EXAMPLE
+        Get-EndpointSecurityTemplate 
+        Gets all Endpoint Security Templates in Endpoint Manager
+        .NOTES
+        NAME: Get-EndpointSecurityTemplate
+        #>
+        
+        
+        $graphApiVersion = "Beta"
+        $ESP_resource = "deviceManagement/templates?`$filter=(isof(%27microsoft.graph.securityBaselineTemplate%27))"
+        
+            try {
+        
+                $uri = "https://graph.microsoft.com/$graphApiVersion/$($ESP_resource)"
+                (Invoke-RestMethod -Method Get -Uri $uri -Headers $authToken).value
+        
+            }
+            
+            catch {
+        
+            $ex = $_.Exception
+            $errorResponse = $ex.Response.GetResponseStream()
+            $reader = New-Object System.IO.StreamReader($errorResponse)
+            $reader.BaseStream.Position = 0
+            $reader.DiscardBufferedData()
+            $responseBody = $reader.ReadToEnd();
+            Write-Host "Response content:`n$responseBody" -f Red
+            Write-Error "Request to $Uri failed with HTTP Status $($ex.Response.StatusCode) $($ex.Response.StatusDescription)"
+            write-host
+            break
+        
+            }
+        
+        }
+        
+        ####################################################
+        
+        Function Get-EndpointSecurityPolicy(){
+        
+        <#
+        .SYNOPSIS
+        This function is used to get all Endpoint Security policies using the Graph API REST interface
+        .DESCRIPTION
+        The function connects to the Graph API Interface and gets all Endpoint Security templates
+        .EXAMPLE
+        Get-EndpointSecurityPolicy
+        Gets all Endpoint Security Policies in Endpoint Manager
+        .NOTES
+        NAME: Get-EndpointSecurityPolicy
+        #>
+        
+        
+        $graphApiVersion = "Beta"
+        $ESP_resource = "deviceManagement/intents"
+        
+            try {
+        
+                $uri = "https://graph.microsoft.com/$graphApiVersion/$($ESP_resource)"
+                (Invoke-RestMethod -Method Get -Uri $uri -Headers $authToken).value
+        
+            }
+            
+            catch {
+        
+            $ex = $_.Exception
+            $errorResponse = $ex.Response.GetResponseStream()
+            $reader = New-Object System.IO.StreamReader($errorResponse)
+            $reader.BaseStream.Position = 0
+            $reader.DiscardBufferedData()
+            $responseBody = $reader.ReadToEnd();
+            Write-Host "Response content:`n$responseBody" -f Red
+            Write-Error "Request to $Uri failed with HTTP Status $($ex.Response.StatusCode) $($ex.Response.StatusDescription)"
+            write-host
+            break
+        
+            }
+        
+        }
+        
+        ####################################################
+        
+        Function Get-EndpointSecurityTemplateCategory(){
+        
+        <#
+        .SYNOPSIS
+        This function is used to get all Endpoint Security categories from a specific template using the Graph API REST interface
+        .DESCRIPTION
+        The function connects to the Graph API Interface and gets all template categories
+        .EXAMPLE
+        Get-EndpointSecurityTemplateCategory -TemplateId $templateId
+        Gets an Endpoint Security Categories from a specific template in Endpoint Manager
+        .NOTES
+        NAME: Get-EndpointSecurityTemplateCategory
+        #>
+        
+        [cmdletbinding()]
+        
+        param
+        (
+            [Parameter(Mandatory=$true)]
+            [ValidateNotNullOrEmpty()]
+            $TemplateId
+        )
+        
+        $graphApiVersion = "Beta"
+        $ESP_resource = "deviceManagement/templates/$TemplateId/categories"
+        
+            try {
+        
+                $uri = "https://graph.microsoft.com/$graphApiVersion/$($ESP_resource)"
+                (Invoke-RestMethod -Method Get -Uri $uri -Headers $authToken).value
+        
+            }
+            
+            catch {
+        
+            $ex = $_.Exception
+            $errorResponse = $ex.Response.GetResponseStream()
+            $reader = New-Object System.IO.StreamReader($errorResponse)
+            $reader.BaseStream.Position = 0
+            $reader.DiscardBufferedData()
+            $responseBody = $reader.ReadToEnd();
+            Write-Host "Response content:`n$responseBody" -f Red
+            Write-Error "Request to $Uri failed with HTTP Status $($ex.Response.StatusCode) $($ex.Response.StatusDescription)"
+            write-host
+            break
+        
+            }
+        
+        }
+        
+        ####################################################
+        
+        Function Get-EndpointSecurityCategorySetting(){
+        
+        <#
+        .SYNOPSIS
+        This function is used to get an Endpoint Security category setting from a specific policy using the Graph API REST interface
+        .DESCRIPTION
+        The function connects to the Graph API Interface and gets a policy category setting
+        .EXAMPLE
+        Get-EndpointSecurityCategorySetting -PolicyId $policyId -categoryId $categoryId
+        Gets an Endpoint Security Categories from a specific template in Endpoint Manager
+        .NOTES
+        NAME: Get-EndpointSecurityCategory
+        #>
+        
+        [cmdletbinding()]
+        
+        param
+        (
+            [Parameter(Mandatory=$true)]
+            [ValidateNotNullOrEmpty()]
+            $PolicyId,
+            [Parameter(Mandatory=$true)]
+            [ValidateNotNullOrEmpty()]
+            $categoryId
+        )
+        
+        $graphApiVersion = "Beta"
+        $ESP_resource = "deviceManagement/intents/$policyId/categories/$categoryId/settings?`$expand=Microsoft.Graph.DeviceManagementComplexSettingInstance/Value"
+        
+            try {
+        
+                $uri = "https://graph.microsoft.com/$graphApiVersion/$($ESP_resource)"
+                (Invoke-RestMethod -Method Get -Uri $uri -Headers $authToken).value
+        
+            }
+            
+            catch {
+        
+            $ex = $_.Exception
+            $errorResponse = $ex.Response.GetResponseStream()
+            $reader = New-Object System.IO.StreamReader($errorResponse)
+            $reader.BaseStream.Position = 0
+            $reader.DiscardBufferedData()
+            $responseBody = $reader.ReadToEnd();
+            Write-Host "Response content:`n$responseBody" -f Red
+            Write-Error "Request to $Uri failed with HTTP Status $($ex.Response.StatusCode) $($ex.Response.StatusDescription)"
+            write-host
+            break
+        
+            }
+        
+        }
+        
+        ####################################################
+  
+        Function Get-DeviceCompliancePolicy(){
 
+            <#
+            .SYNOPSIS
+            This function is used to get device compliance policies from the Graph API REST interface
+            .DESCRIPTION
+            The function connects to the Graph API Interface and gets any device compliance policies
+            .EXAMPLE
+            Get-DeviceCompliancePolicy
+            Returns any device compliance policies configured in Intune
+            .EXAMPLE
+            Get-DeviceCompliancePolicy -Android
+            Returns any device compliance policies for Android configured in Intune
+            .EXAMPLE
+            Get-DeviceCompliancePolicy -iOS
+            Returns any device compliance policies for iOS configured in Intune
+            .NOTES
+            NAME: Get-DeviceCompliancePolicy
+            #>
+            
+            [cmdletbinding()]
+            
+            param
+            (
+                [switch]$Android,
+                [switch]$iOS,
+                [switch]$Win10
+            )
+            
+            $graphApiVersion = "Beta"
+            $Resource = "deviceManagement/deviceCompliancePolicies"
+                
+                try {
+            
+                    $Count_Params = 0
+            
+                    if($Android.IsPresent){ $Count_Params++ }
+                    if($iOS.IsPresent){ $Count_Params++ }
+                    if($Win10.IsPresent){ $Count_Params++ }
+            
+                    if($Count_Params -gt 1){
+                    
+                    write-host "Multiple parameters set, specify a single parameter -Android -iOS or -Win10 against the function" -f Red
+                    
+                    }
+                    
+                    elseif($Android){
+                    
+                    $uri = "https://graph.microsoft.com/$graphApiVersion/$($Resource)"
+                    (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value | Where-Object { ($_.'@odata.type').contains("android") }
+                    
+                    }
+                    
+                    elseif($iOS){
+                    
+                    $uri = "https://graph.microsoft.com/$graphApiVersion/$($Resource)"
+                    (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value | Where-Object { ($_.'@odata.type').contains("ios") }
+                    
+                    }
+            
+                    elseif($Win10){
+                    
+                    $uri = "https://graph.microsoft.com/$graphApiVersion/$($Resource)"
+                    (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value | Where-Object { ($_.'@odata.type').contains("windows10CompliancePolicy") }
+                    
+                    }
+                    
+                    else {
+            
+                    $uri = "https://graph.microsoft.com/$graphApiVersion/$($Resource)"
+                    (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value
+            
+                    }
+            
+                }
+                
+                catch {
+            
+                $ex = $_.Exception
+                $errorResponse = $ex.Response.GetResponseStream()
+                $reader = New-Object System.IO.StreamReader($errorResponse)
+                $reader.BaseStream.Position = 0
+                $reader.DiscardBufferedData()
+                $responseBody = $reader.ReadToEnd();
+                Write-Host "Response content:`n$responseBody" -f Red
+                Write-Error "Request to $Uri failed with HTTP Status $($ex.Response.StatusCode) $($ex.Response.StatusDescription)"
+                write-host
+                break
+            
+                }
+            
+            }
+            
+            ####################################################
+
+            Function Get-IntuneApplication(){
+
+                <#
+                .SYNOPSIS
+                This function is used to get applications from the Graph API REST interface
+                .DESCRIPTION
+                The function connects to the Graph API Interface and gets any applications added
+                .EXAMPLE
+                Get-IntuneApplication
+                Returns any applications configured in Intune
+                .NOTES
+                NAME: Get-IntuneApplication
+                #>
+                
+                [cmdletbinding()]
+                
+                param
+                (
+                    $Name,
+                    $AppId
+                )
+                
+                $graphApiVersion = "Beta"
+                $Resource = "deviceAppManagement/mobileApps"
+                
+                    try {
+                
+                        if($Name){
+                
+                        $uri = "https://graph.microsoft.com/$graphApiVersion/$($Resource)"
+                        (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value | Where-Object { ($_.'displayName').contains("$Name") -and (!($_.'@odata.type').Contains("managed")) -and (!($_.'@odata.type').Contains("#microsoft.graph.iosVppApp")) }
+                
+                        }
+                
+                        elseif($AppId){
+                
+                        $uri = "https://graph.microsoft.com/$graphApiVersion/$($Resource)/$AppId"
+                        (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get)
+                
+                        }
+                
+                        else {
+                
+                        $uri = "https://graph.microsoft.com/$graphApiVersion/$($Resource)"
+                        (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value | ? { (!($_.'@odata.type').Contains("managed")) -and (!($_.'@odata.type').Contains("#microsoft.graph.iosVppApp")) -and (!($_.'@odata.type').Contains("#microsoft.graph.windowsAppX")) -and (!($_.'@odata.type').Contains("#microsoft.graph.androidForWorkApp")) -and (!($_.'@odata.type').Contains("#microsoft.graph.windowsMobileMSI")) -and (!($_.'@odata.type').Contains("#microsoft.graph.androidLobApp")) -and (!($_.'@odata.type').Contains("#microsoft.graph.iosLobApp")) -and (!($_.'@odata.type').Contains("#microsoft.graph.microsoftStoreForBusinessApp")) }
+                
+                        }
+                
+                    }
+                
+                    catch {
+                
+                    $ex = $_.Exception
+                    Write-Host "Request to $Uri failed with HTTP Status $([int]$ex.Response.StatusCode) $($ex.Response.StatusDescription)" -f Red
+                    $errorResponse = $ex.Response.GetResponseStream()
+                    $reader = New-Object System.IO.StreamReader($errorResponse)
+                    $reader.BaseStream.Position = 0
+                    $reader.DiscardBufferedData()
+                    $responseBody = $reader.ReadToEnd();
+                    Write-Host "Response content:`n$responseBody" -f Red
+                    Write-Error "Request to $Uri failed with HTTP Status $($ex.Response.StatusCode) $($ex.Response.StatusDescription)"
+                    write-host
+                    break
+                
+                    }
+                
+                }
+                
+                ####################################################
+
+                
+####################################################
+
+Function Get-ManagedAppPolicy(){
+
+    <#
+    .SYNOPSIS
+    This function is used to get managed app policies from the Graph API REST interface
+    .DESCRIPTION
+    The function connects to the Graph API Interface and gets any managed app policies
+    .EXAMPLE
+    Get-ManagedAppPolicy
+    Returns any managed app policies configured in Intune
+    .NOTES
+    NAME: Get-ManagedAppPolicy
+    #>
+    
+    [cmdletbinding()]
+    
+    param
+    (
+        $Name
+    )
+    
+    $graphApiVersion = "Beta"
+    $Resource = "deviceAppManagement/managedAppPolicies"
+    
+        try {
+        
+            if($Name){
+        
+            $uri = "https://graph.microsoft.com/$graphApiVersion/$($Resource)"
+            (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value | Where-Object { ($_.'displayName').contains("$Name") }
+        
+            }
+        
+            else {
+        
+            $uri = "https://graph.microsoft.com/$graphApiVersion/$($Resource)"
+            (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value | Where-Object { ($_.'@odata.type').contains("ManagedAppProtection") -or ($_.'@odata.type').contains("InformationProtectionPolicy") }
+        
+            }
+        
+        }
+        
+        catch {
+        
+        $ex = $_.Exception
+        $errorResponse = $ex.Response.GetResponseStream()
+        $reader = New-Object System.IO.StreamReader($errorResponse)
+        $reader.BaseStream.Position = 0
+        $reader.DiscardBufferedData()
+        $responseBody = $reader.ReadToEnd();
+        Write-Host "Response content:`n$responseBody" -f Red
+        Write-Error "Request to $Uri failed with HTTP Status $($ex.Response.StatusCode) $($ex.Response.StatusDescription)"
+        write-host
+        break
+        
+        }
+        
+    }
+    
+    ####################################################
+    
+    Function Get-ManagedAppProtection(){
+    
+    <#
+    .SYNOPSIS
+    This function is used to get managed app protection configuration from the Graph API REST interface
+    .DESCRIPTION
+    The function connects to the Graph API Interface and gets any managed app protection policy
+    .EXAMPLE
+    Get-ManagedAppProtection -id $id -OS "Android"
+    Returns a managed app protection policy for Android configured in Intune
+    Get-ManagedAppProtection -id $id -OS "iOS"
+    Returns a managed app protection policy for iOS configured in Intune
+    Get-ManagedAppProtection -id $id -OS "WIP_WE"
+    Returns a managed app protection policy for Windows 10 without enrollment configured in Intune
+    .NOTES
+    NAME: Get-ManagedAppProtection
+    #>
+    
+    [cmdletbinding()]
+    
+    param
+    (
+        [Parameter(Mandatory=$true)]
+        $id,
+        [Parameter(Mandatory=$true)]
+        [ValidateSet("Android","iOS","WIP_WE","WIP_MDM")]
+        $OS    
+    )
+    
+    $graphApiVersion = "Beta"
+    
+        try {
+        
+            if($id -eq "" -or $id -eq $null){
+        
+            write-host "No Managed App Policy id specified, please provide a policy id..." -f Red
+            break
+        
+            }
+        
+            else {
+        
+                if($OS -eq "" -or $OS -eq $null){
+        
+                write-host "No OS parameter specified, please provide an OS. Supported value are Android,iOS,WIP_WE,WIP_MDM..." -f Red
+                Write-Host
+                break
+        
+                }
+        
+                elseif($OS -eq "Android"){
+        
+                $Resource = "deviceAppManagement/androidManagedAppProtections('$id')/?`$expand=apps"
+        
+                $uri = "https://graph.microsoft.com/$graphApiVersion/$($Resource)"
+                Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get
+        
+                }
+        
+                elseif($OS -eq "iOS"){
+        
+                $Resource = "deviceAppManagement/iosManagedAppProtections('$id')/?`$expand=apps"
+        
+                $uri = "https://graph.microsoft.com/$graphApiVersion/$($Resource)"
+                Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get
+        
+                }
+    
+                elseif($OS -eq "WIP_WE"){
+        
+                $Resource = "deviceAppManagement/windowsInformationProtectionPolicies('$id')?`$expand=protectedAppLockerFiles,exemptAppLockerFiles,assignments"
+        
+                $uri = "https://graph.microsoft.com/$graphApiVersion/$($Resource)"
+                Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get
+        
+                }
+    
+                elseif($OS -eq "WIP_MDM"){
+        
+                $Resource = "deviceAppManagement/mdmWindowsInformationProtectionPolicies('$id')?`$expand=protectedAppLockerFiles,exemptAppLockerFiles,assignments"
+        
+                $uri = "https://graph.microsoft.com/$graphApiVersion/$($Resource)"
+                Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get
+    
+                }
+        
+            }
+        
+        }
+    
+        catch {
+        
+        $ex = $_.Exception
+        $errorResponse = $ex.Response.GetResponseStream()
+        $reader = New-Object System.IO.StreamReader($errorResponse)
+        $reader.BaseStream.Position = 0
+        $reader.DiscardBufferedData()
+        $responseBody = $reader.ReadToEnd();
+        Write-Host "Response content:`n$responseBody" -f Red
+        Write-Error "Request to $Uri failed with HTTP Status $($ex.Response.StatusCode) $($ex.Response.StatusDescription)"
+        write-host
+        break
+        
+        }
+    
+    }
+    
+    
+####################################################
+
+Function Export-APPJSONData(){
+
+    <#
+    .SYNOPSIS
+    This function is used to export JSON data returned from Graph
+    .DESCRIPTION
+    This function is used to export JSON data returned from Graph
+    .EXAMPLE
+    Export-JSONData -JSON $JSON
+    Export the JSON inputted on the function
+    .NOTES
+    NAME: Export-JSONData
+    #>
+    
+    param (
+    
+    $JSON,
+    $Type,
+    $ExportPath
+    
+    )
+    
+        try {
+    
+            if($JSON -eq "" -or $JSON -eq $null){
+    
+            write-host "No JSON specified, please specify valid JSON..." -f Red
+    
+            }
+    
+            elseif(!$ExportPath){
+    
+            write-host "No export path parameter set, please provide a path to export the file" -f Red
+    
+            }
+    
+            elseif(!(Test-Path $ExportPath)){
+    
+            write-host "$ExportPath doesn't exist, can't export JSON Data" -f Red
+    
+            }
+    
+            else {
+    
+            $JSON1 = ConvertTo-Json $JSON
+    
+            $JSON_Convert = $JSON1 | ConvertFrom-Json
+    
+            $displayName = $JSON_Convert.displayName
+    
+            # Updating display name to follow file naming conventions - https://msdn.microsoft.com/en-us/library/windows/desktop/aa365247%28v=vs.85%29.aspx
+            $DisplayName = $DisplayName -replace '\<|\>|:|"|/|\\|\||\?|\*', "_"
+    
+            $Properties = ($JSON_Convert | Get-Member | ? { $_.MemberType -eq "NoteProperty" }).Name
+    
+                if($Type){
+    
+                #    $FileName_CSV = "$DisplayName" + "_" + $Type + "_" + $(get-date -f dd-MM-yyyy-H-mm-ss) + ".csv"
+                    $FileName_JSON = "$DisplayName" + "_" + $Type  + ".json"
+    
+                }
+    
+                else {
+    
+                #    $FileName_CSV = "$DisplayName" + "_" + $(get-date -f dd-MM-yyyy-H-mm-ss) + ".csv"
+                    $FileName_JSON = "$DisplayName" +  ".json"
+    
+                }
+    
+                $Object = New-Object System.Object
+    
+                    foreach($Property in $Properties){
+    
+                    $Object | Add-Member -MemberType NoteProperty -Name $Property -Value $JSON_Convert.$Property
+    
+                    }
+    
+                write-host "Export Path:" "$ExportPath"
+    
+            #    $Object | Export-Csv -LiteralPath "$ExportPath\$FileName_CSV" -Delimiter "," -NoTypeInformation -Append
+                $JSON1 | Set-Content -LiteralPath "$ExportPath\$FileName_JSON"
+            #    write-host "CSV created in $ExportPath\$FileName_CSV..." -f cyan
+                write-host "JSON created in $ExportPath\$FileName_JSON..." -f cyan
+                
+            }
+    
+        }
+    
+        catch {
+    
+        $_.Exception
+    
+        }
+    
+    }
+    
+    ####################################################
+    
 Function Export-JSONData(){
 
 <#
@@ -916,3 +1546,214 @@ Write-Host
 
 #endregion Administrative Template
 
+#Region Endpoint Security Templates
+####################################################
+
+# Get all Endpoint Security Templates
+$Templates = Get-EndpointSecurityTemplate
+
+####################################################
+
+# Get all Endpoint Security Policies configured
+$ESPolicies = Get-EndpointSecurityPolicy | Sort-Object displayName
+
+####################################################
+
+$ExportPath = $ExportPathRoot + "\" + "EndpointSecurity"
+
+if(!(Test-Path "$ExportPath")){
+
+    Write-Host
+    Write-Host "Path '$ExportPath' doesn't exist. Create this directory." -ForegroundColor Yellow
+    new-item -ItemType Directory -Path "$ExportPath" | Out-Null
+    }
+
+
+# Looping through all policies configured
+foreach($policy in $ESPolicies){
+
+    Write-Host "Endpoint Security Policy:"$policy.displayName -ForegroundColor Yellow
+    $PolicyName = $policy.displayName
+    $PolicyDescription = $policy.description
+    $policyId = $policy.id
+    $TemplateId = $policy.templateId
+    $roleScopeTagIds = $policy.roleScopeTagIds
+
+    $ES_Template = $Templates | ?  { $_.id -eq $policy.templateId }
+
+    $TemplateDisplayName = $ES_Template.displayName
+    $TemplateId = $ES_Template.id
+    $versionInfo = $ES_Template.versionInfo
+
+    if($TemplateDisplayName -eq "Endpoint detection and response"){
+
+        Write-Host "Export of 'Endpoint detection and response' policy not included in sample script..." -ForegroundColor Magenta
+        Write-Host
+
+    }
+
+    else {
+
+        ####################################################
+
+        # Creating object for JSON output
+        $JSON = New-Object -TypeName PSObject
+
+        Add-Member -InputObject $JSON -MemberType 'NoteProperty' -Name 'displayName' -Value "$PolicyName"
+        Add-Member -InputObject $JSON -MemberType 'NoteProperty' -Name 'description' -Value "$PolicyDescription"
+        Add-Member -InputObject $JSON -MemberType 'NoteProperty' -Name 'roleScopeTagIds' -Value $roleScopeTagIds
+        Add-Member -InputObject $JSON -MemberType 'NoteProperty' -Name 'TemplateDisplayName' -Value "$TemplateDisplayName"
+        Add-Member -InputObject $JSON -MemberType 'NoteProperty' -Name 'TemplateId' -Value "$TemplateId"
+        Add-Member -InputObject $JSON -MemberType 'NoteProperty' -Name 'versionInfo' -Value "$versionInfo"
+
+        ####################################################
+
+        # Getting all categories in specified Endpoint Security Template
+        $Categories = Get-EndpointSecurityTemplateCategory -TemplateId $TemplateId
+
+        # Looping through all categories within the Template
+
+        foreach($category in $Categories){
+
+            $categoryId = $category.id
+
+            $Settings += Get-EndpointSecurityCategorySetting -PolicyId $policyId -categoryId $categoryId
+        
+        }
+
+        # Adding All settings to settingsDelta ready for JSON export
+        Add-Member -InputObject $JSON -MemberType 'NoteProperty' -Name 'settingsDelta' -Value @($Settings)
+
+        ####################################################
+
+        Export-JSONData -JSON $JSON -ExportPath "$ExportPath" -depth 5
+
+        Write-Host
+
+        # Clearing up variables so previous data isn't exported in each policy
+        Clear-Variable JSON
+        Clear-Variable Settings
+
+    }
+
+}
+#EndRegion Endpoint Security Templates
+
+#Region Compliance Policy
+
+$CPs = Get-DeviceCompliancePolicy
+
+$ExportPath = $ExportPathRoot + "\" + "CompliancePolicy"
+
+if(!(Test-Path "$ExportPath")){
+
+    Write-Host
+    Write-Host "Path '$ExportPath' doesn't exist. Create this directory." -ForegroundColor Yellow
+    new-item -ItemType Directory -Path "$ExportPath" | Out-Null
+    }
+
+    foreach($CP in $CPs){
+
+    write-host "Device Compliance Policy:"$CP.displayName -f Yellow
+    Export-JSONData -JSON $CP -ExportPath "$ExportPath" -depth 5
+    Write-Host
+
+    }
+
+#EndRegion Compliance Policy
+
+
+#Region Applications
+
+$MDMApps = Get-IntuneApplication
+
+$ExportPath = $ExportPathRoot + "\" + "Applications"
+
+if(!(Test-Path "$ExportPath")){
+
+    Write-Host
+    Write-Host "Path '$ExportPath' doesn't exist. Create this directory." -ForegroundColor Yellow
+    new-item -ItemType Directory -Path "$ExportPath" | Out-Null
+    }
+
+if($MDMApps){
+
+    foreach($App in $MDMApps){
+
+        $Application = Get-IntuneApplication -AppId $App.id
+        $Type = $Application.'@odata.type'.split(".")[2]
+
+
+        write-host "MDM Application:"$Application.displayName -f Yellow
+        Export-AppJSONData -JSON $Application -Type $Type -ExportPath "$ExportPath"
+        Write-Host
+
+    }
+
+}
+
+else {
+
+    Write-Host "No MDM Applications added to the Intune Service..." -ForegroundColor Red
+    Write-Host
+
+}
+
+#EndRegion Applications
+
+#Region App Protection Policy
+
+####################################################
+
+write-host "Running query against Microsoft Graph for App Protection Policies" -f Yellow
+
+$ManagedAppPolicies = Get-ManagedAppPolicy | ? { ($_.'@odata.type').contains("ManagedAppProtection") }
+$ExportPath = $ExportPathRoot + "\" + "AppProtectionPolicy"
+
+if(!(Test-Path "$ExportPath")){
+
+    Write-Host
+    Write-Host "Path '$ExportPath' doesn't exist. Create this directory." -ForegroundColor Yellow
+    new-item -ItemType Directory -Path "$ExportPath" | Out-Null
+    }
+
+
+write-host
+
+if($ManagedAppPolicies){
+
+    foreach($ManagedAppPolicy in $ManagedAppPolicies){
+
+    write-host "Managed App Policy:"$ManagedAppPolicy.displayName -f Cyan
+
+        if($ManagedAppPolicy.'@odata.type' -eq "#microsoft.graph.androidManagedAppProtection"){
+
+            $AppProtectionPolicy = Get-ManagedAppProtection -id $ManagedAppPolicy.id -OS "Android"
+
+            $AppProtectionPolicy | Add-Member -MemberType NoteProperty -Name '@odata.type' -Value "#microsoft.graph.androidManagedAppProtection"
+
+#            $AppProtectionPolicy
+
+            Export-JSONData -JSON $AppProtectionPolicy -ExportPath "$ExportPath" -depth 5
+
+        }
+
+        elseif($ManagedAppPolicy.'@odata.type' -eq "#microsoft.graph.iosManagedAppProtection"){
+
+            $AppProtectionPolicy = Get-ManagedAppProtection -id $ManagedAppPolicy.id -OS "iOS"
+
+            $AppProtectionPolicy | Add-Member -MemberType NoteProperty -Name '@odata.type' -Value "#microsoft.graph.iosManagedAppProtection"
+
+#            $AppProtectionPolicy
+
+            Export-JSONData -JSON $AppProtectionPolicy -ExportPath "$ExportPath" -depth 5
+
+        }
+
+    Write-Host
+
+    }
+
+}
+
+#EndRegion App Protection Policy
