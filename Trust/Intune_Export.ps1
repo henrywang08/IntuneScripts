@@ -73,7 +73,7 @@ function Get-AuthToken {
     }
     
     $clientId = "d1ddf0e4-d672-4dae-b554-9d5bdfd93547"
-    [String[]] $scopes = @("user.read","DeviceManagementServiceConfig.ReadWrite.All")
+    [String[]] $scopes = @("DeviceManagementServiceConfig.ReadWrite.All")
     $redirectUri = "urn:ietf:wg:oauth:2.0:oob"
     
     $authority = "https://login.microsoftonline.com/$Tenant"
