@@ -15,6 +15,8 @@ See LICENSE in the project root for license information.
 #   2. Install Microsoft.IdentityModel.Abstractions module. This module requires Nuget is registered as PSRepository
 #           Register-PSRepository  -Name Nuget -SourceLocation "http://www.nuget.org/api/v2"
 
+Install-Module -Name Microsoft.Identity.Client
+Import-module -name Microsoft.Identity.Client
 
 function Get-AuthToken {
 
@@ -73,7 +75,7 @@ function Get-AuthToken {
     }
     
     $clientId = "d1ddf0e4-d672-4dae-b554-9d5bdfd93547"
-    [String[]] $scopes = @("DeviceManagementServiceConfig.ReadWrite.All")
+    [String[]] $scopes = @("DeviceManagementServiceConfig.ReadWrite.All","DeviceManagementConfiguration.ReadWrite.All","DeviceManagementApps.ReadWrite.All")
     $redirectUri = "urn:ietf:wg:oauth:2.0:oob"
     
     $authority = "https://login.microsoftonline.com/$Tenant"
@@ -154,6 +156,8 @@ $DCP_resource = "deviceManagement/deviceConfigurations"
     try {
     
     $uri = "https://graph.microsoft.com/$graphApiVersion/$($DCP_resource)"
+    Write-Host 
+    write-host $uri
     (Invoke-RestMethod -Uri $uri -Headers $authToken -Method Get).Value
     
     }
@@ -1345,8 +1349,9 @@ else {
     }
 
 # Getting the authorization token
-Get-AuthToken -User $User
 
+Get-AuthToken -User $User
+Write-Host "Get-AuthToken"
 }
 
 #endregion Authentication
@@ -1404,6 +1409,7 @@ if(!(Test-Path "$ExportPath")){
     new-item -ItemType Directory -Path "$ExportPath" | Out-Null
     }
 
+Write-Host "Get-DeviceConfigurationPolicy"
 $DCPs = Get-DeviceConfigurationPolicy | Where-Object { ($_.'@odata.type' -ne "#microsoft.graph.iosUpdateConfiguration") -and ($_.'@odata.type' -ne "#microsoft.graph.windowsUpdateForBusinessConfiguration") }
 
 foreach($DCP in $DCPs){
